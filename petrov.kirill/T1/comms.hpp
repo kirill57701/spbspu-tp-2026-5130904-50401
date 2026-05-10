@@ -9,10 +9,16 @@ namespace petrov
   {
     mem(str::string s);
     std::string name;
-    std::string lines;
+    std::vector<str::string> lines;
     std::vector<std::weak_ptr<mem>> txt;
   };
-  
+  class knowbase
+  {
+    public:
+      void reg_comm(std::iostream& in, std::ostream& ou);
+    private:
+      std::unordered_map
+  };
 }
 
 #endif
