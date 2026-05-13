@@ -12,6 +12,9 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
       if (!note(in))
       {
         ou << "<INVALID COMMAND>\n";
+        in.clear();
+        std::string q;
+        getline(in, q);
       }
     }
     else if (s == "line")
@@ -19,6 +22,9 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
       if (!line(in))
       {
         ou << "<INVALID COMMAND>\n";
+        in.clear();
+        std::string q;
+        getline(in, q);
       }
     }
     else if (s == "show")
@@ -26,6 +32,9 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
       if (!show(in, ou))
       {
         ou << "<INVALID COMMAND>\n";
+        in.clear();
+        std::string q;
+        getline(in, q);
       }
     }
     else if (s == "drop")
@@ -33,6 +42,9 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
       if (!drop(in))
       {
         ou << "<INVALID COMMAND>\n";
+        in.clear();
+        std::string q;
+        getline(in, q);
       }
     }
     else if (s == "link")
@@ -40,6 +52,9 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
       if (!link(in))
       {
         ou << "<INVALID COMMAND>\n";
+        in.clear();
+        std::string q;
+        getline(in, q);
       }
     }
     else if (s == "halt")
@@ -47,6 +62,9 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
       if (!halt(in))
       {
         ou << "<INVALID COMMAND>\n";
+        in.clear();
+        std::string q;
+        getline(in, q);
       }
     }
     else if (s == "mind")
@@ -54,6 +72,9 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
       if (!mind(in, ou))
       {
        ou << "<INVALID COMMAND>\n";
+        in.clear();
+        std::string q;
+        getline(in, q);
       }
     }
     else if (s == "expired")
@@ -61,6 +82,9 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
       if (!expired(in, ou))
       {
         ou << "<INVALID COMMAND>\n";
+        in.clear();
+        std::string q;
+        getline(in, q);
       }
     }
     else if (s == "refresh")
@@ -68,11 +92,17 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
       if (!refresh(in))
       {
         ou << "<INVALID COMMAND>\n";
+        in.clear();
+        std::string q;
+        getline(in, q);
       }
     }
     else
     {
       ou << "<INVALID COMMAND>\n";
+      in.clear();
+      std::string q;
+      getline(in, q);
     }
   }
 }
