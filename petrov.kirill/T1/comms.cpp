@@ -8,7 +8,6 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
   while (in >> s)
   {
     bool res = 1;
-    bool f = 1;
     if (s == "note")
     {
       res = note(in);
@@ -47,10 +46,10 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
     }
     else
     {
-      f = 0;
+      continue;
     }
 
-    if (f && !res)
+    if (!res)
     {
       ou << "<INVALID COMMAND>\n";
     }
