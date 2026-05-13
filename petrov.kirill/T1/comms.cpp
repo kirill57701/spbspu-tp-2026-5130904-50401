@@ -151,6 +151,10 @@ bool petrov::knowbase::show(std::istream& in, std::ostream& ou)
   {
     return 0;
   }
+  if (lineee->second->lines.empty())
+  {
+    ou << '\n';
+  }
   for (size_t i = 0; i < lineee->second->lines.size(); ++i)
   {
     ou << lineee->second->lines[i] << '\n';
