@@ -46,7 +46,7 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
     }
     else
     {
-      continue;
+      return;
     }
 
     if (!res)
