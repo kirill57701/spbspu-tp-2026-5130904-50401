@@ -95,7 +95,8 @@ bool petrov::knowbase::note(std::istream& in)
 bool petrov::knowbase::line(std::istream& in)
 {
   std::string s1, s2;
-  if (!(in >> s1 >> std::quoted(s2))
+  in >> s1 >> std::quoted(s2);
+  if (!in)
   {
     return 0;
   }
