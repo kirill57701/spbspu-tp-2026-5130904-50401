@@ -80,7 +80,10 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
 bool petrov::knowbase::note(std::istream& in)
 {
   std::string s;
-  in >> s;
+  if (!(in >> s))
+  {
+    return 0;
+  }
   if (storage.find(s) != storage.end())
   {
     return 0;
@@ -92,7 +95,10 @@ bool petrov::knowbase::note(std::istream& in)
 bool petrov::knowbase::line(std::istream& in)
 {
   std::string s1, s2;
-  in >> s1 >> std::quoted(s2);
+  if (!(in >> s1 >> std::quoted(s2))
+  {
+    return 0;
+  }
   std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it = storage.find(s1);
   if (it == storage.end())
   {
@@ -105,7 +111,10 @@ bool petrov::knowbase::line(std::istream& in)
 bool petrov::knowbase::show(std::istream& in, std::ostream& ou)
 {
   std::string s1;
-  in >> s1;
+  if (!(in >> s1))
+  {
+    return 0;
+  }
   std::unordered_map<std::string, std::shared_ptr<mem>>::iterator lineee = storage.find(s1);
   if (lineee == storage.end())
   {
@@ -113,23 +122,18 @@ bool petrov::knowbase::show(std::istream& in, std::ostream& ou)
   }
   for (size_t i = 0; i < lineee->second->lines.size(); ++i)
   {
-    if (i != lineee->second->lines.size() - 1)
-    {
-      ou << lineee->second->lines[i] << '\n';
-    }
-    else
-    {
-      ou << lineee->second->lines[i];
-    }
+    ou << lineee->second->lines[i] << '\n';
   }
-  ou << '\n';
   return 1;
 }
 
 bool petrov::knowbase::drop(std::istream& in)
 {
   std::string s;
-  in >> s;
+  if (!(in >> s))
+  {
+    return 0;
+  }
   std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it = storage.find(s);
   if (it == storage.end())
   {
@@ -142,7 +146,10 @@ bool petrov::knowbase::drop(std::istream& in)
 bool petrov::knowbase::link(std::istream& in)
 {
   std::string s1, s2;
-  in >> s1 >> s2;
+  if (!(in >> s1 >> s2))
+  {
+    return 0;
+  }
   std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it1 = storage.find(s1);
   std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it2 = storage.find(s2);
   if (it1 == storage.end() || it2 == storage.end())
@@ -163,7 +170,10 @@ bool petrov::knowbase::link(std::istream& in)
 bool petrov::knowbase::halt(std::istream& in)
 {
   std::string s1, s2;
-  in >> s1 >> s2;
+  if (!(in >> s1 >> s2))
+  {
+    return 0;
+  }
   std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it1 = storage.find(s1);
   std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it2 = storage.find(s2);
   if (it1 == storage.end() || it2 == storage.end())
@@ -184,7 +194,10 @@ bool petrov::knowbase::halt(std::istream& in)
 bool petrov::knowbase::mind(std::istream& in, std::ostream& ou)
 {
   std::string s;
-  in >> s;
+  if (!(in >> s))
+  {
+    return 0;
+  }
   std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it = storage.find(s);
   if (it == storage.end())
   {
@@ -204,7 +217,10 @@ bool petrov::knowbase::mind(std::istream& in, std::ostream& ou)
 bool petrov::knowbase::expired(std::istream& in, std::ostream& ou)
 {
   std::string s;
-  in >> s;
+  if (!(in >> s))
+  {
+    return 0;
+  }
   std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it = storage.find(s);
   if (it == storage.end())
   {
@@ -225,7 +241,10 @@ bool petrov::knowbase::expired(std::istream& in, std::ostream& ou)
 bool petrov::knowbase::refresh(std::istream& in)
 {
   std::string s;
-  in >> s;
+  if (!(in >> s))
+  {
+    return 0;
+  }
   std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it = storage.find(s);
   if (it == storage.end())
   {
