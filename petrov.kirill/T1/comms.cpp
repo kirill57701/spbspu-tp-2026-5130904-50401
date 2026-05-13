@@ -7,102 +7,54 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
   std::string s;
   while (in >> s)
   {
+    int res = 1;
+    int f = 1;
     if (s == "note")
     {
-      if (!note(in))
-      {
-        ou << "<INVALID COMMAND>\n";
-        in.clear();
-        std::string q;
-        getline(in, q);
-      }
+      res = note(in);
     }
     else if (s == "line")
     {
-      if (!line(in))
-      {
-        ou << "<INVALID COMMAND>\n";
-        in.clear();
-        std::string q;
-        getline(in, q);
-      }
+      res = line(in);
     }
     else if (s == "show")
     {
-      if (!show(in, ou))
-      {
-        ou << "<INVALID COMMAND>\n";
-        in.clear();
-        std::string q;
-        getline(in, q);
-      }
+      res = show(in, ou);
     }
     else if (s == "drop")
     {
-      if (!drop(in))
-      {
-        ou << "<INVALID COMMAND>\n";
-        in.clear();
-        std::string q;
-        getline(in, q);
-      }
+      res = drop(in);
     }
     else if (s == "link")
     {
-      if (!link(in))
-      {
-        ou << "<INVALID COMMAND>\n";
-        in.clear();
-        std::string q;
-        getline(in, q);
-      }
+      res = link(in);
     }
     else if (s == "halt")
     {
-      if (!halt(in))
-      {
-        ou << "<INVALID COMMAND>\n";
-        in.clear();
-        std::string q;
-        getline(in, q);
-      }
+      res = halt(in);
     }
     else if (s == "mind")
     {
-      if (!mind(in, ou))
-      {
-       ou << "<INVALID COMMAND>\n";
-        in.clear();
-        std::string q;
-        getline(in, q);
-      }
+      res = mind(in, ou);
     }
     else if (s == "expired")
     {
-      if (!expired(in, ou))
-      {
-        ou << "<INVALID COMMAND>\n";
-        in.clear();
-        std::string q;
-        getline(in, q);
-      }
+      res = expired(in, ou);
     }
     else if (s == "refresh")
     {
-      if (!refresh(in))
-      {
-        ou << "<INVALID COMMAND>\n";
-        in.clear();
-        std::string q;
-        getline(in, q);
-      }
+      res = refresh(in);
     }
     else
     {
+      f = 0;
       ou << "<INVALID COMMAND>\n";
-      in.clear();
       std::string q;
       getline(in, q);
+    }
+    if (f && !res)
+    {
+      ou << "<INVALID COMMAND>\n";
     }
   }
 }
