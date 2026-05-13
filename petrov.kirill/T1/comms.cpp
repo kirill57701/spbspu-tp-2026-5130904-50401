@@ -22,7 +22,7 @@ void knowbase::reg_comm(std::iostream& in, std::ostream& ou)
     }
     else if (s == "show")
     {
-      if (!note(in, ou))
+      if (!show(in, ou))
       {
         ou << "<INVALID COMMAND>\n";
       }
@@ -55,9 +55,9 @@ void knowbase::reg_comm(std::iostream& in, std::ostream& ou)
         ou << "<INVALID COMMAND>\n";
       }
     }
-    else if (s == "expired")
+    else if (s == "expiried")
     {
-      if (!expired(in, ou))
+      if (!expiried(in, ou))
       {
         ou << "<INVALID COMMAND>\n";
       }
@@ -112,13 +112,13 @@ bool knowbase::show(std::istream& in, std::ostream& ou)
   }
   for (size_t i = 0; i < lineee->second->lines.size(); ++i)
   {
-    if (i != lines.size() - 1)
+    if (i != lineee->second->lines.size() - 1)
     {
-      ou << lines[i] << '\n';
+      ou << lineee->second->lines[i] << '\n';
     }
     else
     {
-      ou << lines[i];
+      ou << lineee->second->lines[i];
     }
   }
   ou << '\n';
@@ -156,5 +156,94 @@ bool knowbase::link(std::istream& in)
     }
   }
   it1->second->txt.push_back(it2->second);
+  return 1;
+}
+
+bool knowbase::halt(std::istream& in)
+{
+  std::string s1, s2;
+  in >> s1 >> s2;
+  std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it1 = storage.find(s1);
+  std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it2 = storage.find(s2);
+  if (it1 == storage.end() || it2 == storage.end())
+  {
+    return 0;
+  }
+  for (size_t i = 0; i < it1->second->txt.size(); ++i)
+  {
+    if (it1->second->txt[i].lock() == it2->second)
+    {
+      it1->second->txt.erase(it1->second->txt.begin() + i);
+      return 1;
+    }
+  }
+  return 0;
+}
+
+bool knowbase::mind(std::istream& in, std::ostream& ou)
+{
+  std::string s;
+  in >> s;
+  std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it = storage.find(s);
+  if (it == storage.end())
+  {
+    return 0;
+  }
+  bool empty = 1;
+  for (size_t i = 0; i < it->second->txt.size(); ++i)
+  {
+    std::shared_ptr<mem> ptr = it->second->txt[i].lock();
+    if (ptr)
+    {
+      ou << ptr->name << '\n';
+      empty = 0;
+    }
+  }
+  if (empty)
+  {
+    ou << '\n';
+  }
+  return 1;
+}
+
+bool knowbase::expiried(std::istream& in, std::ostream& ou)
+{
+  std::string s;
+  in >> s;
+  std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it = storage.find(s);
+  if (it == storage.end())
+  {
+    return 0;
+  }
+  size_t count = 0;
+  for (size_t i = 0; i < it->second->txt.size(); ++i)
+  {
+    if (it->second->txt[i].expired())
+    {
+      count++;
+    }
+  }
+  ou << count << '\n';
+  return 1;
+}
+
+bool knowbase::refresh(std::istream& in)
+{
+  std::string s;
+  in >> s;
+  std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it = storage.find(s);
+  if (it == storage.end())
+  {
+    return 0;
+  }
+  std::vector<std::weak_ptr<mem>> clean;
+  for (size_t i = 0; i < it->second->txt.size(); ++i)
+  {
+    if (!it->second->txt[i].expired())
+    {
+      clean.push_back(it->second->txt[i]);
+    }
+  }
+  it->second->txt = clean;
   return 1;
 }
