@@ -56,9 +56,9 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
         ou << "<INVALID COMMAND>\n";
       }
     }
-    else if (s == "expiried")
+    else if (s == "expired")
     {
-      if (!expiried(in, ou))
+      if (!expired(in, ou))
       {
         ou << "<INVALID COMMAND>\n";
       }
@@ -207,7 +207,7 @@ bool petrov::knowbase::mind(std::istream& in, std::ostream& ou)
   return 1;
 }
 
-bool petrov::knowbase::expiried(std::istream& in, std::ostream& ou)
+bool petrov::knowbase::expired(std::istream& in, std::ostream& ou)
 {
   std::string s;
   in >> s;

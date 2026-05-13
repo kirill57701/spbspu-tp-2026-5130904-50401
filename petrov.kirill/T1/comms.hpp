@@ -30,7 +30,7 @@ namespace petrov
       bool link(std::istream& in);
       bool halt(std::istream& in);
       bool mind(std::istream& in, std::ostream& ou);
-      bool expiried(std::istream& in, std::ostream& ou);
+      bool expired(std::istream& in, std::ostream& ou);
       bool refresh(std::istream& in);
   };
 }
