@@ -185,7 +185,7 @@ bool petrov::knowbase::mind(std::istream& in, std::ostream& ou)
   {
     return 0;
   }
-  std::unordered_map<std::string, std::shared_ptr<mem>> it = storage.find(s);
+  std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it = storage.find(s);
   if (it == storage.end())
   {
     return 0;
