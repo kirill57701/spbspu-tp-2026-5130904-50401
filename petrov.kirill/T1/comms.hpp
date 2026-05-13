@@ -7,7 +7,9 @@ namespace petrov
 {
   struct mem
   {
-    mem(str::string s);
+    mem(str::string s):
+    name(s)
+    {}
     std::string name;
     std::vector<str::string> lines;
     std::vector<std::weak_ptr<mem>> txt;
