@@ -50,7 +50,7 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
       f = 0;
     }
 
-    if (found && !res)
+    if (f && !res)
     {
       ou << "<INVALID COMMAND>\n";
     }
