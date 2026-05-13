@@ -1,7 +1,8 @@
 #include "comms.hpp"
 #include <stdexcept>
+#include <iomanip>
 
-void knowbase::reg_comm(std::iostream& in, std::ostream& ou)
+void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
 {
   std::string s;
   while (in >> s)
@@ -76,7 +77,7 @@ void knowbase::reg_comm(std::iostream& in, std::ostream& ou)
   }
 }
 
-bool knowbase::note(std::istream& in)
+bool petrov::knowbase::note(std::istream& in)
 {
   std::string s;
   in >> s;
@@ -88,7 +89,7 @@ bool knowbase::note(std::istream& in)
   return 1;
 }
 
-bool knowbase::line(std::istream& in)
+bool petrov::knowbase::line(std::istream& in)
 {
   std::string s1, s2;
   in >> s1 >> std::quoted(s2);
@@ -101,7 +102,7 @@ bool knowbase::line(std::istream& in)
   return 1;
 }
 
-bool knowbase::show(std::istream& in, std::ostream& ou)
+bool petrov::knowbase::show(std::istream& in, std::ostream& ou)
 {
   std::string s1;
   in >> s1;
@@ -125,7 +126,7 @@ bool knowbase::show(std::istream& in, std::ostream& ou)
   return 1;
 }
 
-bool knowbase::drop(std::istream& in)
+bool petrov::knowbase::drop(std::istream& in)
 {
   std::string s;
   in >> s;
@@ -138,13 +139,13 @@ bool knowbase::drop(std::istream& in)
   return 1;
 }
 
-bool knowbase::link(std::istream& in)
+bool petrov::knowbase::link(std::istream& in)
 {
   std::string s1, s2;
   in >> s1 >> s2;
   std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it1 = storage.find(s1);
   std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it2 = storage.find(s2);
-  if (i1 == storage.end() || it2 == storage.end())
+  if (it1 == storage.end() || it2 == storage.end())
   {
     return 0;
   }
@@ -159,7 +160,7 @@ bool knowbase::link(std::istream& in)
   return 1;
 }
 
-bool knowbase::halt(std::istream& in)
+bool petrov::knowbase::halt(std::istream& in)
 {
   std::string s1, s2;
   in >> s1 >> s2;
@@ -180,7 +181,7 @@ bool knowbase::halt(std::istream& in)
   return 0;
 }
 
-bool knowbase::mind(std::istream& in, std::ostream& ou)
+bool petrov::knowbase::mind(std::istream& in, std::ostream& ou)
 {
   std::string s;
   in >> s;
@@ -206,7 +207,7 @@ bool knowbase::mind(std::istream& in, std::ostream& ou)
   return 1;
 }
 
-bool knowbase::expiried(std::istream& in, std::ostream& ou)
+bool petrov::knowbase::expiried(std::istream& in, std::ostream& ou)
 {
   std::string s;
   in >> s;
@@ -227,7 +228,7 @@ bool knowbase::expiried(std::istream& in, std::ostream& ou)
   return 1;
 }
 
-bool knowbase::refresh(std::istream& in)
+bool petrov::knowbase::refresh(std::istream& in)
 {
   std::string s;
   in >> s;

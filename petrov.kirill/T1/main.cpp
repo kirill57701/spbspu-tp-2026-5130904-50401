@@ -1,6 +1,9 @@
 #include <iostream>
+#include "comms.hpp"
 
 int main()
 {
-  std::cout << "petrov.kirill\n";
+  petrov::knowbase A;
+  A.reg_comm(std::cin, std::cout);
+  return 0;
 }
