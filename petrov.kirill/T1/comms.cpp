@@ -48,8 +48,6 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
     else
     {
       f = 0;
-      std::string q;
-      std::getline(in, q);
     }
 
     if (f && !res)
