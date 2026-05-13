@@ -53,7 +53,7 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
     {
       if (!mind(in, ou))
       {
-        ou << "<INVALID COMMAND>\n";
+       ou << "<INVALID COMMAND>\n";
       }
     }
     else if (s == "expired")
@@ -190,19 +190,13 @@ bool petrov::knowbase::mind(std::istream& in, std::ostream& ou)
   {
     return 0;
   }
-  bool empty = 1;
   for (size_t i = 0; i < it->second->txt.size(); ++i)
   {
     std::shared_ptr<mem> ptr = it->second->txt[i].lock();
     if (ptr)
     {
       ou << ptr->name << '\n';
-      empty = 0;
     }
-  }
-  if (empty)
-  {
-    ou << '\n';
   }
   return 1;
 }
