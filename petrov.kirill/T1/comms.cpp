@@ -233,15 +233,14 @@ bool petrov::knowbase::mind(std::istream& in, std::ostream& ou)
   {
     return 0;
   }
-  std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it = storage.find(s);
+  std::unordered_map<std::string, std::shared_ptr<mem>> it = storage.find(s);
   if (it == storage.end())
   {
     return 0;
   }
   for (size_t i = 0; i < it->second->txt.size(); ++i)
   {
-    std::shared_ptr<mem> ptr = it->second->txt[i].lock();
-    if (ptr)
+    if (std::shared_ptr<mem> ptr = it->second->txt[i].lock())
     {
       ou << ptr->name << '\n';
     }
