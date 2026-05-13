@@ -124,3 +124,37 @@ bool knowbase::show(std::istream& in, std::ostream& ou)
   ou << '\n';
   return 1;
 }
+
+bool knowbase::drop(std::istream& in)
+{
+  std::string s;
+  in >> s;
+  std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it = storage.find(s);
+  if (it == storage.end())
+  {
+    return 0;
+  }
+  storage.erase(s);
+  return 1;
+}
+
+bool knowbase::link(std::istream& in)
+{
+  std::string s1, s2;
+  in >> s1 >> s2;
+  std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it1 = storage.find(s1);
+  std::unordered_map<std::string, std::shared_ptr<mem>>::iterator it2 = storage.find(s2);
+  if (i1 == storage.end() || it2 == storage.end())
+  {
+    return 0;
+  }
+  for (size_t i = 0; i < it1->second->txt.size(); ++i)
+  {
+    if (it1->second->txt[i].lock() == it2->second)
+    {
+      return 0;
+    }
+  }
+  it1->second->txt.push_back(it2->second);
+  return 1;
+}
