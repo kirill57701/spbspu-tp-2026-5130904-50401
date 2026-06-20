@@ -39,7 +39,6 @@ namespace petrov
   public:
     explicit FormatGuard(std::basic_ios<char>& stream);
     ~FormatGuard();
-
   private:
     std::basic_ios<char>& stream_;
     char fill_;
@@ -146,15 +145,12 @@ namespace petrov
     {
       return in;
     }
-
     DataStruct temp{0, 0, ""};
     in >> ExpectChar{'('} >> ExpectChar{':'};
-
     for (int i = 0; i < 3; ++i)
     {
       std::string key;
       std::getline(in, key, ' ');
-
       if (key == "key1")
       {
         in >> ReadOct{temp.key1};
@@ -171,20 +167,16 @@ namespace petrov
       {
         in.setstate(std::ios::failbit);
       }
-
       if (i < 2)
       {
         in >> ExpectChar{':'};
       }
     }
-
     in >> ExpectChar{':'} >> ExpectChar{')'};
-
     if (in)
     {
       dest = temp;
     }
-
     return in;
   }
 
@@ -195,9 +187,7 @@ namespace petrov
     {
       return out;
     }
-
     FormatGuard guard(out);
-
     out << "(:key1 ";
     if (src.key1 == 0)
     {
@@ -207,10 +197,8 @@ namespace petrov
     {
       out << "0" << std::oct << src.key1;
     }
-
     out << ":key2 0x" << std::hex << std::uppercase << src.key2
         << ":key3 \"" << src.key3 << "\":)";
-
     return out;
   }
 
@@ -226,12 +214,13 @@ namespace petrov
     }
     return lhs.key3.length() < rhs.key3.length();
   }
-
 }
 
-int main() {
+int main()
+{
   using namespace petrov;
   std::vector<DataStruct> data;
+  int total_records = 0;
 
   while (std::cin)
   {
@@ -240,7 +229,7 @@ int main() {
     {
       break;
     }
-
+    total_records++;
     DataStruct temp;
     if (std::cin >> temp)
     {
@@ -253,8 +242,22 @@ int main() {
     }
   }
 
-  std::sort(data.begin(), data.end(), compareData);
-  std::copy(data.begin(), data.end(), std::ostream_iterator<DataStruct>(std::cout, "\n"));
+  if (data.empty())
+  {
+    if (total_records == 0)
+    {
+      std::cerr << "Looks like there is no supported record. Cannot determine input. Test skipped\n";
+    }
+    else
+    {
+      std::cerr << "Atleast one supported record type\n";
+    }
+  }
+  else
+  {
+    std::sort(data.begin(), data.end(), compareData);
+    std::copy(data.begin(), data.end(), std::ostream_iterator<DataStruct>(std::cout, "\n"));
+  }
 
   return 0;
 }
