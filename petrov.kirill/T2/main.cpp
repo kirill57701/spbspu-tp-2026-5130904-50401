@@ -59,4 +59,52 @@ namespace petrov
     stream_.precision(prec_);
     stream_.flags(fl_);
   }
+
+  std::istream& operator>>(std::istream& in, ExpectChar&& dest) {
+    std::istream::sentry sentry(in);
+    if (!sentry) {
+      return in;
+    }
+    char c;
+    if (in >> c && c != dest.expected) {
+      in.setstate(std::ios::failbit);
+    }
+    return in;
+  }
+
+  std::istream& operator>>(std::istream& in, ReadOct&& dest) {
+    std::istream::sentry sentry(in);
+    if (!sentry) {
+      return in;
+    }
+    char prefix_zero;
+    in >> prefix_zero;
+    if (prefix_zero != '0') {
+      in.setstate(std::ios::failbit);
+      return in;
+    }
+    const int next_char = in.peek();
+    if (next_char >= '0' && next_char <= '7') {
+      in >> std::oct >> dest.ref >> std::dec;
+    } else {
+      dest.ref = 0;
+    }
+    return in;
+  }
+
+  std::istream& operator>>(std::istream& in, ReadHex&& dest) {
+    std::istream::sentry sentry(in);
+    if (!sentry) {
+      return in;
+    }
+    char prefix_zero;
+    char prefix_x;
+    in >> prefix_zero >> prefix_x;
+    if (prefix_zero != '0' || (prefix_x != 'x' && prefix_x != 'X')) {
+      in.setstate(std::ios::failbit);
+      return in;
+    }
+    in >> std::hex >> dest.ref >> std::dec;
+    return in;
+  }
 }
