@@ -31,7 +31,8 @@ namespace petrov {
   void processArea(std::istream& in, std::ostream& out, const std::vector< Polygon >& data)
   {
     std::string arg;
-    if (!(in >> arg)) {
+    if (!(in >> arg))
+    {
       out << "<INVALID COMMAND>\n";
       return;
     }
@@ -39,25 +40,37 @@ namespace petrov {
     std::vector< Polygon > matched;
     using namespace std::placeholders;
 
-    if (arg == "EVEN") {
+    if (arg == "EVEN")
+    {
       std::copy_if(data.begin(), data.end(), std::back_inserter(matched), isEvenPoints);
-    } else if (arg == "ODD") {
+    }
+    else if (arg == "ODD")
+    {
       std::copy_if(data.begin(), data.end(), std::back_inserter(matched), isOddPoints);
-    } else if (arg == "MEAN") {
-      if (data.empty()) {
+    }
+    else if (arg == "MEAN")
+    {
+      if (data.empty())
+      {
         out << "<INVALID COMMAND>\n";
         return;
       }
       matched = data;
-    } else {
-      try {
+    }
+    else
+    {
+      try
+      {
         size_t num = std::stoull(arg);
-        if (num < 3) {
+        if (num < 3)
+        {
           out << "<INVALID COMMAND>\n";
           return;
         }
         std::copy_if(data.begin(), data.end(), std::back_inserter(matched), std::bind(isPointsEqual, _1, num));
-      } catch (...) {
+      }
+      catch (...)
+      {
         out << "<INVALID COMMAND>\n";
         return;
       }
@@ -70,9 +83,12 @@ namespace petrov {
 
     std::ostream::fmtflags flags = out.flags();
     out << std::fixed << std::setprecision(1);
-    if (arg == "MEAN") {
+    if (arg == "MEAN")
+    {
       out << (total / static_cast< double >(data.size())) << "\n";
-    } else {
+    }
+    else
+    {
       out << total << "\n";
     }
     out.flags(flags);
@@ -91,18 +107,24 @@ namespace petrov {
   void processMax(std::istream& in, std::ostream& out, const std::vector< Polygon >& data)
   {
     std::string arg;
-    if (!(in >> arg) || data.empty()) {
+    if (!(in >> arg) || data.empty())
+    {
       out << "<INVALID COMMAND>\n";
       return;
     }
     std::ostream::fmtflags flags = out.flags();
-    if (arg == "AREA") {
+    if (arg == "AREA")
+    {
       auto maxIt = std::max_element(data.begin(), data.end(), compareArea);
       out << std::fixed << std::setprecision(1) << getPolygonArea(*maxIt) << "\n";
-    } else if (arg == "VERTEXES") {
+    }
+    else if (arg == "VERTEXES")
+    {
       auto maxIt = std::max_element(data.begin(), data.end(), compareVertexCount);
       out << getVertexCount(*maxIt) << "\n";
-    } else {
+    }
+    else
+    {
       out << "<INVALID COMMAND>\n";
     }
     out.flags(flags);
@@ -111,18 +133,24 @@ namespace petrov {
   void processMin(std::istream& in, std::ostream& out, const std::vector< Polygon >& data)
   {
     std::string arg;
-    if (!(in >> arg) || data.empty()) {
+    if (!(in >> arg) || data.empty())
+    {
       out << "<INVALID COMMAND>\n";
       return;
     }
     std::ostream::fmtflags flags = out.flags();
-    if (arg == "AREA") {
+    if (arg == "AREA")
+    {
       auto minIt = std::min_element(data.begin(), data.end(), compareArea);
       out << std::fixed << std::setprecision(1) << getPolygonArea(*minIt) << "\n";
-    } else if (arg == "VERTEXES") {
+    }
+    else if (arg == "VERTEXES")
+    {
       auto minIt = std::min_element(data.begin(), data.end(), compareVertexCount);
       out << getVertexCount(*minIt) << "\n";
-    } else {
+    }
+    else
+    {
       out << "<INVALID COMMAND>\n";
     }
     out.flags(flags);
@@ -131,25 +159,35 @@ namespace petrov {
   void processCount(std::istream& in, std::ostream& out, const std::vector< Polygon >& data)
   {
     std::string arg;
-    if (!(in >> arg)) {
+    if (!(in >> arg))
+    {
       out << "<INVALID COMMAND>\n";
       return;
     }
     using namespace std::placeholders;
     size_t count = 0;
-    if (arg == "EVEN") {
+    if (arg == "EVEN")
+    {
       count = std::count_if(data.begin(), data.end(), isEvenPoints);
-    } else if (arg == "ODD") {
+    }
+    else if (arg == "ODD")
+    {
       count = std::count_if(data.begin(), data.end(), isOddPoints);
-    } else {
-      try {
+    }
+    else
+    {
+      try
+      {
         size_t num = std::stoull(arg);
-        if (num < 3) {
+        if (num < 3)
+        {
           out << "<INVALID COMMAND>\n";
           return;
         }
         count = std::count_if(data.begin(), data.end(), std::bind(isPointsEqual, _1, num));
-      } catch (...) {
+      }
+      catch (...)
+      {
         out << "<INVALID COMMAND>\n";
         return;
       }
@@ -160,15 +198,18 @@ namespace petrov {
   void processMaxSeq(std::istream& in, std::ostream& out, const std::vector< Polygon >& data)
   {
     Polygon target;
-    if (!(in >> target)) {
+    if (!(in >> target))
+    {
       skipLine(in);
       out << "<INVALID COMMAND>\n";
       return;
     }
 
     int nextChar = in.get();
-    while (nextChar != '\n' && nextChar != EOF) {
-      if (!std::isspace(nextChar)) {
+    while (nextChar != '\n' && nextChar != EOF)
+    {
+      if (!std::isspace(nextChar))
+      {
         skipLine(in);
         out << "<INVALID COMMAND>\n";
         return;
@@ -176,7 +217,8 @@ namespace petrov {
       nextChar = in.get();
     }
 
-    if (data.empty()) {
+    if (data.empty())
+    {
       out << 0 << "\n";
       return;
     }
@@ -185,16 +227,18 @@ namespace petrov {
     flagsVector.reserve(data.size());
     using namespace std::placeholders;
     std::transform(data.begin(), data.end(), std::back_inserter(flagsVector),
-      std::bind(std::equal_to< Polygon >(), _1, target));
+    std::bind(std::equal_to< Polygon >(), _1, target));
 
     size_t currentMax = 0;
     auto startIter = flagsVector.begin();
-    while (startIter != flagsVector.end()) {
-      startIter = std::find(startIter, flagsVector.end(), true);
-      if (startIter == flagsVector.end()) {
+    while (startIter != flagsVector.end())
+    {
+      startIter = std::find(startIter, flagsVector.end(), 1);
+      if (startIter == flagsVector.end())
+      {
         break;
       }
-      auto endIter = std::find(startIter, flagsVector.end(), false);
+      auto endIter = std::find(startIter, flagsVector.end(), 0);
       size_t sequenceLength = std::distance(startIter, endIter);
       currentMax = std::max(currentMax, sequenceLength);
       startIter = endIter;

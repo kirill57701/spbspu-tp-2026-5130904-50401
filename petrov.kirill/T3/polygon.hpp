@@ -5,16 +5,19 @@
 #include <iostream>
 
 namespace petrov {
-  struct Point {
+  struct Point
+  {
     int x;
     int y;
   };
 
-  struct Polygon {
+  struct Polygon
+  {
     std::vector< Point > points;
   };
 
-  struct CharSeparator {
+  struct CharSeparator
+  {
     char expected;
   };
 
