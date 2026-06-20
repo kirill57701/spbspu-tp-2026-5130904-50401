@@ -1,63 +1,65 @@
+#include <algorithm>
 #include <iostream>
+#include <iterator>
+#include <limits>
 #include <string>
+#include <vector>
 
-namespace petrov
-{
-  struct DataStruct
-  {
-    size_t k1, k2;
-    std::string k3;
-  };
-  struct ExpChar
-  {
-    char exp;
-  };
-  struct ReadOct
-  {
-    size_t& oct;
-  };
-  struct ReadHex
-  {
-    size_t& oct;
-  };
-  struct ReadStr
-  {
-    std::string& str;
+namespace petrov {
+
+  struct DataStruct {
+    unsigned long long key1;
+    unsigned long long key2;
+    std::string key3;
   };
 
-  class Format
-  {
+  struct ExpectChar {
+    char expected;
+  };
+
+  struct ReadOct {
+    unsigned long long& ref;
+  };
+
+  struct ReadHex {
+    unsigned long long& ref;
+  };
+
+  struct ReadString {
+    std::string& ref;
+  };
+
+  class FormatGuard {
   public:
-    explicit Format(std::basic_ios<char>& stream);
-    ~Format();
+    explicit FormatGuard(std::basic_ios<char>& stream);
+    ~FormatGuard();
 
   private:
     std::basic_ios<char>& stream_;
     char fill_;
-    std::streamsize prec_;
-    std::basic_ios<char>::fmtflags fl_;
+    std::streamsize precision_;
+    std::basic_ios<char>::fmtflags flags_;
   };
 
-  std::istream& operator>>(std::istream& in, ExpChar&& d);
-  std::istream& operator>>(std::istream& in, ReadOct&& d);
-  std::istream& operator>>(std::istream& in, ReadHex&& d);
-  std::istream& operator>>(std::istream& in, ReadStr&& d);
-  std::istream& operator>>(std::istream& in, DataStruct& d);
+  std::istream& operator>>(std::istream& in, ExpectChar&& dest);
+  std::istream& operator>>(std::istream& in, ReadOct&& dest);
+  std::istream& operator>>(std::istream& in, ReadHex&& dest);
+  std::istream& operator>>(std::istream& in, ReadString&& dest);
+  std::istream& operator>>(std::istream& in, DataStruct& dest);
   std::ostream& operator<<(std::ostream& out, const DataStruct& src);
-
   bool compareData(const DataStruct& lhs, const DataStruct& rhs);
 
-  FormatGuard::FormatGuard(std::basic_ios<char>& stream):
-      stream_(stream),
+  FormatGuard::FormatGuard(std::basic_ios<char>& stream)
+    : stream_(stream),
       fill_(stream.fill()),
-      precision_(stream.prec()),
-      fl_(stream.flags()) {
+      precision_(stream.precision()),
+      flags_(stream.flags()) {
   }
 
   FormatGuard::~FormatGuard() {
     stream_.fill(fill_);
-    stream_.precision(prec_);
-    stream_.flags(fl_);
+    stream_.precision(precision_);
+    stream_.flags(flags_);
   }
 
   std::istream& operator>>(std::istream& in, ExpectChar&& dest) {
@@ -107,6 +109,7 @@ namespace petrov
     in >> std::hex >> dest.ref >> std::dec;
     return in;
   }
+
   std::istream& operator>>(std::istream& in, ReadString&& dest) {
     std::istream::sentry sentry(in);
     if (!sentry) {
@@ -172,6 +175,7 @@ namespace petrov
 
     return out;
   }
+
   bool compareData(const DataStruct& lhs, const DataStruct& rhs) {
     if (lhs.key1 != rhs.key1) {
       return lhs.key1 < rhs.key1;
@@ -181,4 +185,30 @@ namespace petrov
     }
     return lhs.key3.length() < rhs.key3.length();
   }
+
+}
+
+int main() {
+  using namespace petrov;
+  std::vector<DataStruct> data;
+
+  while (std::cin) {
+    std::cin >> std::ws;
+    if (std::cin.eof()) {
+      break;
+    }
+
+    DataStruct temp;
+    if (std::cin >> temp) {
+      data.push_back(temp);
+    } else {
+      std::cin.clear();
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+  }
+
+  std::sort(data.begin(), data.end(), compareData);
+  std::copy(data.begin(), data.end(), std::ostream_iterator<DataStruct>(std::cout, "\n"));
+
+  return 0;
 }
