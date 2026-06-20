@@ -227,9 +227,7 @@ int main()
     std::cin >> std::ws;
     if (std::cin.eof())
     {
-
       break;
-
     }
     total_records++;
     DataStruct temp;
