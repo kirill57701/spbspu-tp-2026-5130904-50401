@@ -39,7 +39,6 @@ namespace petrov
   public:
     explicit FormatGuard(std::basic_ios<char>& stream);
     ~FormatGuard();
-
   private:
     std::basic_ios<char>& stream_;
     char fill_;
@@ -55,7 +54,7 @@ namespace petrov
   std::ostream& operator<<(std::ostream& out, const DataStruct& src);
   bool compareData(const DataStruct& lhs, const DataStruct& rhs);
 
-  FormatGuard::FormatGuard(std::basic_ios<char>& stream) :
+  FormatGuard::FormatGuard(std::basic_ios<char>& stream):
     stream_(stream),
     fill_(stream.fill()),
     precision_(stream.precision()),
@@ -91,19 +90,13 @@ namespace petrov
     {
       return in;
     }
-
     char prefix_zero;
-    if (!(in >> prefix_zero))
-    {
-      return in;
-    }
-
+    in >> prefix_zero;
     if (prefix_zero != '0')
     {
       in.setstate(std::ios::failbit);
       return in;
     }
-
     const int next_char = in.peek();
     if (next_char >= '0' && next_char <= '7')
     {
@@ -123,20 +116,14 @@ namespace petrov
     {
       return in;
     }
-
     char prefix_zero;
     char prefix_x;
-    if (!(in >> prefix_zero >> prefix_x))
-    {
-      return in;
-    }
-
+    in >> prefix_zero >> prefix_x;
     if (prefix_zero != '0' || (prefix_x != 'x' && prefix_x != 'X'))
     {
       in.setstate(std::ios::failbit);
       return in;
     }
-
     in >> std::hex >> dest.ref >> std::dec;
     return in;
   }
@@ -158,84 +145,39 @@ namespace petrov
     {
       return in;
     }
-
     DataStruct temp{0, 0, ""};
-
-    if (!(in >> ExpectChar{'('} >> ExpectChar{':'}))
-    {
-      return in;
-    }
-
-    bool parsed_keys[3] = {false, false, false};
-
+    in >> ExpectChar{'('} >> ExpectChar{':'};
     for (int i = 0; i < 3; ++i)
     {
       std::string key;
       std::getline(in, key, ' ');
-
       if (key == "key1")
       {
-        if (parsed_keys[0])
-        {
-          in.setstate(std::ios::failbit);
-          return in;
-        }
-        if (!(in >> ReadOct{temp.key1}))
-        {
-          return in;
-        }
-        parsed_keys[0] = true;
+        in >> ReadOct{temp.key1};
       }
       else if (key == "key2")
       {
-        if (parsed_keys[1])
-        {
-          in.setstate(std::ios::failbit);
-          return in;
-        }
-        if (!(in >> ReadHex{temp.key2}))
-        {
-          return in;
-        }
-        parsed_keys[1] = true;
+        in >> ReadHex{temp.key2};
       }
       else if (key == "key3")
       {
-        if (parsed_keys[2])
-        {
-          in.setstate(std::ios::failbit);
-          return in;
-        }
-        if (!(in >> ReadString{temp.key3}))
-        {
-          return in;
-        }
-        parsed_keys[2] = true;
+        in >> ReadString{temp.key3};
       }
       else
       {
         in.setstate(std::ios::failbit);
-        return in;
+        break;
       }
-
       if (i < 2)
       {
-        if (!(in >> ExpectChar{':'}))
-        {
-          return in;
-        }
+        in >> ExpectChar{':'};
       }
     }
-    if (!(in >> ExpectChar{':'} >> ExpectChar{')'}))
+    in >> ExpectChar{':'} >> ExpectChar{')'};
+    if (in)
     {
-      return in;
+      dest = temp;
     }
-    if (!parsed_keys[0] || !parsed_keys[1] || !parsed_keys[2])
-    {
-      in.setstate(std::ios::failbit);
-      return in;
-    }
-    dest = temp;
     return in;
   }
 
@@ -247,16 +189,8 @@ namespace petrov
       return out;
     }
     FormatGuard guard(out);
-    out << "(:key1 ";
-    if (src.key1 == 0)
-    {
-      out << "0";
-    }
-    else
-    {
-      out << "0" << std::oct << src.key1;
-    }
-    out << ":key2 0x" << std::hex << std::uppercase << src.key2
+    out << "(:key1 0" << std::oct << src.key1
+        << ":key2 0x" << std::hex << std::uppercase << src.key2
         << ":key3 \"" << src.key3 << "\":)";
     return out;
   }
@@ -273,57 +207,30 @@ namespace petrov
     }
     return lhs.key3.length() < rhs.key3.length();
   }
-
 }
 
 int main()
 {
   using namespace petrov;
   std::vector<DataStruct> data;
-  int total_records = 0;
-  int valid_records = 0;
 
-  while (true)
+  while (std::cin.peek() != EOF)
   {
-    std::cin >> std::ws;
-
-    if (std::cin.eof())
-    {
-      break;
-    }
-    if (std::cin.peek() == EOF)
-    {
-      break;
-    }
-    total_records++;
     DataStruct temp;
     if (std::cin >> temp)
     {
       data.push_back(temp);
-      valid_records++;
     }
     else
     {
       std::cin.clear();
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
+    std::cin >> std::ws;
   }
-  if (data.empty())
-  {
-    if (total_records == 0)
-    {
-      std::cerr << "Looks like there is no supported record. Cannot determine input. Test skipped" << std::endl;
-    }
-    else
-    {
-      std::cerr << "Atleast one supported record type" << std::endl;
-    }
-  }
-  else
-  {
-    std::sort(data.begin(), data.end(), compareData);
-    std::copy(data.begin(), data.end(),
-    std::ostream_iterator<DataStruct>(std::cout, "\n"));
-  }
+
+  std::sort(data.begin(), data.end(), compareData);
+  std::copy(data.begin(), data.end(), std::ostream_iterator<DataStruct>(std::cout, "\n"));
+
   return 0;
 }
