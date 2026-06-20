@@ -39,6 +39,7 @@ namespace petrov
   public:
     explicit FormatGuard(std::basic_ios<char>& stream);
     ~FormatGuard();
+
   private:
     std::basic_ios<char>& stream_;
     char fill_;
@@ -54,7 +55,7 @@ namespace petrov
   std::ostream& operator<<(std::ostream& out, const DataStruct& src);
   bool compareData(const DataStruct& lhs, const DataStruct& rhs);
 
-  FormatGuard::FormatGuard(std::basic_ios<char>& stream):
+  FormatGuard::FormatGuard(std::basic_ios<char>& stream) :
     stream_(stream),
     fill_(stream.fill()),
     precision_(stream.precision()),
@@ -90,13 +91,19 @@ namespace petrov
     {
       return in;
     }
+
     char prefix_zero;
-    in >> prefix_zero;
+    if (!(in >> prefix_zero))
+    {
+      return in;
+    }
+
     if (prefix_zero != '0')
     {
       in.setstate(std::ios::failbit);
       return in;
     }
+
     const int next_char = in.peek();
     if (next_char >= '0' && next_char <= '7')
     {
@@ -116,14 +123,20 @@ namespace petrov
     {
       return in;
     }
+
     char prefix_zero;
     char prefix_x;
-    in >> prefix_zero >> prefix_x;
+    if (!(in >> prefix_zero >> prefix_x))
+    {
+      return in;
+    }
+
     if (prefix_zero != '0' || (prefix_x != 'x' && prefix_x != 'X'))
     {
       in.setstate(std::ios::failbit);
       return in;
     }
+
     in >> std::hex >> dest.ref >> std::dec;
     return in;
   }
@@ -145,38 +158,84 @@ namespace petrov
     {
       return in;
     }
+
     DataStruct temp{0, 0, ""};
-    in >> ExpectChar{'('} >> ExpectChar{':'};
+
+    if (!(in >> ExpectChar{'('} >> ExpectChar{':'}))
+    {
+      return in;
+    }
+
+    bool parsed_keys[3] = {false, false, false};
+
     for (int i = 0; i < 3; ++i)
     {
       std::string key;
       std::getline(in, key, ' ');
+
       if (key == "key1")
       {
-        in >> ReadOct{temp.key1};
+        if (parsed_keys[0])
+        {
+          in.setstate(std::ios::failbit);
+          return in;
+        }
+        if (!(in >> ReadOct{temp.key1}))
+        {
+          return in;
+        }
+        parsed_keys[0] = true;
       }
       else if (key == "key2")
       {
-        in >> ReadHex{temp.key2};
+        if (parsed_keys[1])
+        {
+          in.setstate(std::ios::failbit);
+          return in;
+        }
+        if (!(in >> ReadHex{temp.key2}))
+        {
+          return in;
+        }
+        parsed_keys[1] = true;
       }
       else if (key == "key3")
       {
-        in >> ReadString{temp.key3};
+        if (parsed_keys[2])
+        {
+          in.setstate(std::ios::failbit);
+          return in;
+        }
+        if (!(in >> ReadString{temp.key3}))
+        {
+          return in;
+        }
+        parsed_keys[2] = true;
       }
       else
       {
         in.setstate(std::ios::failbit);
+        return in;
       }
+
       if (i < 2)
       {
-        in >> ExpectChar{':'};
+        if (!(in >> ExpectChar{':'}))
+        {
+          return in;
+        }
       }
     }
-    in >> ExpectChar{':'} >> ExpectChar{')'};
-    if (in)
+    if (!(in >> ExpectChar{':'} >> ExpectChar{')'}))
     {
-      dest = temp;
+      return in;
     }
+    if (!parsed_keys[0] || !parsed_keys[1] || !parsed_keys[2])
+    {
+      in.setstate(std::ios::failbit);
+      return in;
+    }
+    dest = temp;
     return in;
   }
 
@@ -214,6 +273,7 @@ namespace petrov
     }
     return lhs.key3.length() < rhs.key3.length();
   }
+
 }
 
 int main()
@@ -221,11 +281,17 @@ int main()
   using namespace petrov;
   std::vector<DataStruct> data;
   int total_records = 0;
+  int valid_records = 0;
 
-  while (std::cin)
+  while (true)
   {
     std::cin >> std::ws;
+
     if (std::cin.eof())
+    {
+      break;
+    }
+    if (std::cin.peek() == EOF)
     {
       break;
     }
@@ -234,6 +300,7 @@ int main()
     if (std::cin >> temp)
     {
       data.push_back(temp);
+      valid_records++;
     }
     else
     {
@@ -241,23 +308,22 @@ int main()
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
   }
-
   if (data.empty())
   {
     if (total_records == 0)
     {
-      std::cerr << "Looks like there is no supported record. Cannot determine input. Test skipped\n";
+      std::cerr << "Looks like there is no supported record. Cannot determine input. Test skipped" << std::endl;
     }
     else
     {
-      std::cerr << "Atleast one supported record type\n";
+      std::cerr << "Atleast one supported record type" << std::endl;
     }
   }
   else
   {
     std::sort(data.begin(), data.end(), compareData);
-    std::copy(data.begin(), data.end(), std::ostream_iterator<DataStruct>(std::cout, "\n"));
+    std::copy(data.begin(), data.end(), 
+              std::ostream_iterator<DataStruct>(std::cout, "\n"));
   }
-
   return 0;
 }
