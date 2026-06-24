@@ -1,6 +1,7 @@
 #include "comms.hpp"
 #include <stdexcept>
 #include <iomanip>
+#include <limits>
 
 void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
 {
@@ -46,12 +47,13 @@ void petrov::knowbase::reg_comm(std::istream& in, std::ostream& ou)
     }
     else
     {
-      return;
+      res = 0;
     }
-
     if (!res)
     {
       ou << "<INVALID COMMAND>\n";
+      in.clear();
+      in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
   }
 }
